@@ -26,4 +26,5 @@ npm run appium
 // OPEN NEW TERMINAL
 cd java
 // RUN ./src/main/java/Automate.java file
+java @/var/folders/vb/0xz979b13l1205zd4yz4c6cr0000gn/T/cp_45x437p5p7ebsgut8w7xl7ol0.argfile Automate
 ```
