@@ -1,7 +1,7 @@
 # smuresearch-appium-test-scripts
 
-[Appiium Documentation](https://appium.io/docs/en/about-appium/api/)
-[screenshot fix](https://github.com/android/android-test/issues/911)
+- [Appiium Documentation](https://appium.io/docs/en/about-appium/api/)
+- [screenshot fix](https://github.com/android/android-test/issues/911)
 
 ### Prerequisites
 - ```npm i -g appium```
