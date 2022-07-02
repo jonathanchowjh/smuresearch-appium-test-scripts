@@ -1,0 +1,28 @@
+{
+  "name": "appium",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier": "npx prettier --write */**.js",
+    "env": "chmod +x ./env.sh && ./env.sh",
+    "read_activity": "chmod +x ./getActivity.sh && ./getActivity.sh org.telegram.messenger",
+    "read_apk": "$ANDROID_HOME/build-tools/33.0.0/aapt dump badging ./apks/org.telegram.messenger_26366.apk",
+    "screenshot": "$ANDROID_HOME/tools/bin/uiautomatorviewer",
+    "appium": "appium-doctor --android && appium",
+    "ant": "node index.js antennapod",
+    "tele": "node index.js antennapod"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "webdriverio": "^7.20.5"
+  },
+  "devDependencies": {
+    "prettier": "2.7.1",
+    "prettier-plugin-java": "^1.6.2"
+  }
+}
