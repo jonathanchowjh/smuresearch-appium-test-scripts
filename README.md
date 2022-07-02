@@ -1,4 +1,4 @@
-# Appium Mobile Tests
+# smuresearch-appium-test-scripts
 
 [Appiium Documentation](https://appium.io/docs/en/about-appium/api/)
 [screenshot fix](https://github.com/android/android-test/issues/911)
@@ -19,7 +19,11 @@
 ### RUN CODE
 ```
 npm i
+// CONNECT PHONE
+npm run screenshot   // take XML screenshot of phone
+npm run appium
+
+// OPEN NEW TERMINAL
 cd java
 // RUN ./src/main/java/Automate.java file
 ```
-# smuresearch-appium-test-scripts
