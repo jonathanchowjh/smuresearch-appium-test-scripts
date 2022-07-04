@@ -33,9 +33,15 @@ public class Automate {
   public static void main(String[] args) {
     long startTime = System.nanoTime();
     long endTime, delta;
+    
     try {
       antennapod = new Antennapod();
       antennapod.run();
+
+      // TIME PRINT
+      endTime = System.nanoTime();
+      delta = (endTime - startTime) / 1000000000;
+      System.out.println("Elapsed time since start of experiment: " + delta + "s");
       // curSeq = 0;
       // while (true) {
       //     endTime = System.nanoTime();

@@ -121,41 +121,31 @@ public class Antennapod {
     return func;
   }
 
-  public Function<Void, Integer> choosePodcastTape() {
+  public Function<Void, Integer> podcastTapeList() {
     Function<Void, Integer> func = Void -> {
       Integer id = null;
       try {
+        // CLICK STAY ON PAGE BUTTONS
+        while (Math.random() < 0.65) {
+          podcastTapeListSOP();
+        }
         // GET PODCAST LIST
-        WebElement buttonsList = this.driver.findElement(By.id("de.danoeh.antennapod:id/recyclerView"));
-        List<WebElement> buttons = buttonsList.findElements(By.className("android.widget.FrameLayout"));
-        buttons = Helpers.getClickables(buttons);
-        List<WebElement> downloadPlayButtons = new ArrayList<>();
-
-        // SPLIT TO TAPE AND DOWNLOAD AND PLAY
-        downloadPlayButtons.addAll(buttons);
-        downloadPlayButtons.removeIf(ele -> {
-          return !Arrays
-            .asList(new String[] { "Play", "Download" })
-            .contains(ele.getAttribute("content-desc"));
-        });
-        buttons.removeIf(ele -> {
+        WebElement tapesList = this.driver.findElement(By.id("de.danoeh.antennapod:id/recyclerView"));
+        List<WebElement> tapes = tapesList.findElements(By.className("android.widget.FrameLayout"));
+        tapes = Helpers.getClickables(tapes);
+        tapes.removeIf(ele -> {
           return Arrays
             .asList(new String[] { "Play", "Download" })
             .contains(ele.getAttribute("content-desc"));
         });
         Helpers.printByInnerElement(
-          buttons,
+          tapes,
           null,
           "de.danoeh.antennapod:id/left_padding",
           "content-desc"
         );
-
-        // CLICK DOWNLOAD PLAY WITH 0.5 PROB ELSE CLICK NEXT PAGE
-        while (Math.random() < 0.5) {
-          id = Helpers.clickRandom(this.driver, downloadPlayButtons, null);
-          System.out.println("Clicked Download Play button: " + id);
-        }
-        id = Helpers.clickRandom(this.driver, buttons, null);
+        // CLICK TAPE
+        id = Helpers.clickRandom(this.driver, tapes, null);
         System.out.println("Clicked Tape: " + id + "\n");
       } catch (Exception err) {
         err.printStackTrace();
@@ -165,38 +155,64 @@ public class Antennapod {
     return func;
   }
 
+  public int podcastTapeListSOP() throws Exception {
+    // GET DOWNLOAD PLAY BUTTONS
+    WebElement sopList = this.driver.findElement(By.id("de.danoeh.antennapod:id/recyclerView"));
+    List<WebElement> playDownload = sopList.findElements(By.className("android.widget.FrameLayout"));
+    playDownload.removeIf(ele -> {
+      return !Arrays
+        .asList(new String[] { "Play", "Download" })
+        .contains(ele.getAttribute("content-desc"));
+    });
+    // GET FILTER BUTTON
+    WebElement toolbar = this.driver.findElement(By.id("de.danoeh.antennapod:id/toolbar"));
+    WebElement linearLayout = toolbar.findElement(By.className("androidx.appcompat.widget.LinearLayoutCompat"));
+    WebElement sort = linearLayout.findElement(By.id("de.danoeh.antennapod:id/sort_items"));
+    WebElement filter = linearLayout.findElement(By.id("de.danoeh.antennapod:id/filter_items"));
+    WebElement refresh = linearLayout.findElement(By.id("de.danoeh.antennapod:id/refresh_item"));
+    List<WebElement> sop = new ArrayList<>();
+    sop.add(sort);
+    sop.add(filter);
+    sop.add(refresh);
+    sop.addAll(playDownload);
+    sop = Helpers.getClickables(sop);
+    int selected = (int) Math.floor(Math.random() * sop.size());
+    // int selected = 1;
+    Helpers.safeClick(this.driver, sop.get(selected));
+    System.out.println("podcastTapeListSOP: clicked :: " + selected);
+    if (selected == 0) {  // SORT
+      if (Math.random() < 0.2) {
+        WebElement cancel = this.driver.findElement(By.id("android:id/button2"));
+        Helpers.safeClick(this.driver, cancel);
+        System.out.println("podcastTapeListSOP: clicked sort cancel");
+      }
+      List<WebElement> sortSelect = this.driver.findElements(By.className("android.widget.CheckedTextView"));
+      sortSelect = Helpers.getClickables(sortSelect);
+      Helpers.clickRandom(this.driver, sortSelect, null);
+      System.out.println("podcastTapeListSOP: clicked sort select");
+    }
+    if (selected == 1) {  // FILTER
+      List<WebElement> filterSelect = this.driver.findElements(By.className("android.widget.RadioButton"));
+      filterSelect = Helpers.getClickables(filterSelect);
+      while (Math.random() < 0.65) {
+        Helpers.clickRandom(this.driver, filterSelect, null);
+        System.out.println("podcastTapeListSOP: clicked filter select");
+      }
+      WebElement confirm = this.driver.findElement(By.id("android:id/button1"));
+      Helpers.safeClick(this.driver, confirm);
+      System.out.println("podcastTapeListSOP: clicked filter confirm");
+    }
+    return selected;
+  }
+
   public Function<Void, Integer> podcastTape() {
     Function<Void, Integer> func = Void -> {
       Integer id = null;
       try {
-        // TAPE PLAY FUNCTIONS
-        List<WebElement> buttons = new ArrayList<>();
-        buttons.add(
-          this.driver.findElement(By.id("de.danoeh.antennapod:id/butAction1"))
-        );
-        buttons.add(
-          this.driver.findElement(By.id("de.danoeh.antennapod:id/butAction2"))
-        );
-        buttons = Helpers.getClickables(buttons);
-        Helpers.printByInnerElement(
-          buttons,
-          "android.widget.TextView",
-          null,
-          "text"
-        );
-        id = Helpers.clickRandom(this.driver, buttons, null);
-
-        // RUN WITH PROBABILITY
-        while (Math.random() < 0.8) {
-          if (Math.random() < 0.5) {
-            id = podcastTapeOptions();
-            System.out.println("Clicked podcastTapeOptions: " + id);
-            continue;
-          }
-          id = Helpers.clickRandom(this.driver, buttons, null);
-          System.out.println("Clicked podcastTapePlay: " + id);
+        // SOP BUTTON
+        while (Math.random() < 0.7) {
+          podcastTapeSOP();
         }
-
         // CLICK BACK
         WebElement toolbar = this.driver.findElement(By.id("de.danoeh.antennapod:id/toolbar"));
         WebElement backButton = toolbar.findElement(By.className("android.widget.ImageButton"));
@@ -210,12 +226,37 @@ public class Antennapod {
     return func;
   }
 
-  public int podcastTapeOptions() throws Exception {
+  private int podcastTapeSOP() throws Exception {
+    // TAPE PLAY FUNCTIONS
+    List<WebElement> sop = new ArrayList<>();
+    WebElement play = this.driver.findElement(By.id("de.danoeh.antennapod:id/butAction1"));
+    WebElement download = this.driver.findElement(By.id("de.danoeh.antennapod:id/butAction2"));
+    WebElement options = optionsButton();
+    sop.add(options);
+    sop.add(play);
+    sop.add(download);
+    sop = Helpers.getClickables(sop);
+    int id = Helpers.clickRandom(this.driver, sop, null);
+    if (id == 0) {  // OPTIONS
+      List<WebElement> optionsSelect = optionsSelection(
+        Arrays.asList(new String[]{"Open Podcast", "Share..."})
+      );
+      Helpers.clickRandom(this.driver, optionsSelect, null);
+    }
+    System.out.println("podcastTapeSOP: clicked :: " + id);
+    return id;
+  }
+
+  private WebElement optionsButton() throws Exception {
     // options buttons
     WebElement toolbar = this.driver.findElement(By.id("de.danoeh.antennapod:id/toolbar"));
     WebElement options = toolbar.findElement(By.className("android.widget.ImageView"));
-    Helpers.safeClick(this.driver, options);
+    return options;
+  }
 
+  private List<WebElement> optionsSelection(
+    List<String> removeFromList
+  ) throws Exception {
     WebElement optionsDialog = this.driver.findElement(By.className("android.widget.ListView"));
     List<WebElement> optionButtons = optionsDialog.findElements(By.className("android.widget.LinearLayout"));
     optionButtons = Helpers.getClickables(optionButtons);
@@ -224,15 +265,9 @@ public class Antennapod {
       "android.widget.TextView",
       null,
       "text",
-      Arrays.asList(new String[] { "Open Podcast", "Share…" })
+      removeFromList
     );
-    // Helpers.printByInnerElement(
-    //   optionButtons,
-    //   "android.widget.TextView",
-    //   null,
-    //   "text"
-    // );
-    return Helpers.clickRandom(this.driver, optionButtons, null);
+    return Helpers.getClickables(optionButtons);
   }
 
   public void createPath() {
@@ -241,7 +276,7 @@ public class Antennapod {
     dict.put("podcast_add", new FunctionGraph("podcast_add", addPodcast()));
     dict.put(
       "podcast_choose_tape",
-      new FunctionGraph("podcast_choose_tape", choosePodcastTape())
+      new FunctionGraph("podcast_choose_tape", podcastTapeList())
     );
     dict.put("podcast_tape", new FunctionGraph("podcast_tape", podcastTape()));
     graph = dict.get("menu_select");

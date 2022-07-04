@@ -37,7 +37,7 @@ public class Helpers {
     List<WebElement> elements,
     Integer max
   ) throws Exception {
-    if (elements.size() == 0) return null;
+    if (elements.size() == 0) return -1;
     int modulus = max == null
       ? elements.size()
       : Math.min(max, elements.size());
@@ -49,7 +49,7 @@ public class Helpers {
   public static void safeClick(AppiumDriver driver, WebElement element)
     throws Exception {
     if (isClickable(element)) {
-      driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+      driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
       element.click();
     } else {
       throw new Error("ERROR: Element Unclickable: " + element.getClass());
