@@ -149,7 +149,8 @@ public class Helpers {
     W3cActions.doSwipe(driver, start, end, 1000);  //with duration 1s
   }
 
-  public static void tap(AppiumDriver driver, double w, double h) {
+  public static void tap(AppiumDriver driver, double w, double h) throws Exception {
+    Thread.sleep(3000);
     Dimension dimension = driver.manage().window().getSize();
     Point forTap = new Point((int)(dimension.width*w), (int)(dimension.height*h));
     W3cActions.doTap(driver, forTap, 200); //with duration 200ms
