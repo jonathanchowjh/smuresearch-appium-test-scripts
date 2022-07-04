@@ -2,6 +2,7 @@
 // Each app needs to be customized
 
 import apps.Antennapod;
+import apps.OrganicMaps;
 import apps.Telegram;
 
 import com.google.common.collect.ImmutableMap;
@@ -26,7 +27,7 @@ public class Automate {
   static int curSeq;
   static Antennapod antennapod;
   static Telegram telegram;
-  static 
+  static OrganicMaps organicMaps;
 
   public enum button {
     FIRST_BUTTON, // Trending
@@ -42,11 +43,14 @@ public class Automate {
       String currentPath = new java.io.File("../apks").getCanonicalPath();
       System.out.println("Current dir:" + currentPath);
       
-      antennapod = new Antennapod(currentPath + "/de.danoeh.antennapod_2050296.apk");
-      antennapod.run();
+      // antennapod = new Antennapod(currentPath + "/de.danoeh.antennapod_2050296.apk");
+      // antennapod.run();
 
       // telegram = new Telegram(currentPath + "/org.telegram.messenger_26366.apk");
       // telegram.run();
+
+      organicMaps = new OrganicMaps(currentPath + "/app.organicmaps_22053110.apk");
+      organicMaps.run();
 
       // TIME PRINT
       endTime = System.nanoTime();
