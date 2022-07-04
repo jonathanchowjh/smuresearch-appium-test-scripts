@@ -62,9 +62,9 @@ public class Antennapod {
     current.func.apply(null);
   }
 
-  public Function<Void, Integer> menuSelect() {
+  public Function<Void, Integer> menuSelect(int idSelect) {
     Function<Void, Integer> func = Void -> {
-      Integer id = 5;
+      Integer id = idSelect;
       try {
         // OPEN MENU
         WebElement toolbar = this.driver.findElement(By.id("de.danoeh.antennapod:id/toolbar"));
@@ -273,7 +273,7 @@ public class Antennapod {
 
   public void createPath() {
     HashMap<String, FunctionGraph> dict = new HashMap<>();
-    dict.put("menu_select", new FunctionGraph("menu_select", menuSelect()));
+    dict.put("menu_select", new FunctionGraph("menu_select", menuSelect(5)));
     dict.put("podcast_add", new FunctionGraph("podcast_add", addPodcast()));
     dict.put(
       "podcast_choose_tape",
