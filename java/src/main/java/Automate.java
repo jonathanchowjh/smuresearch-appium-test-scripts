@@ -2,6 +2,8 @@
 // Each app needs to be customized
 
 import apps.Antennapod;
+import apps.Telegram;
+
 import com.google.common.collect.ImmutableMap;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
@@ -23,6 +25,8 @@ public class Automate {
   // START OF CODE
   static int curSeq;
   static Antennapod antennapod;
+  static Telegram telegram;
+  static 
 
   public enum button {
     FIRST_BUTTON, // Trending
@@ -35,8 +39,14 @@ public class Automate {
     long endTime, delta;
     
     try {
-      antennapod = new Antennapod();
+      String currentPath = new java.io.File("../apks").getCanonicalPath();
+      System.out.println("Current dir:" + currentPath);
+      
+      antennapod = new Antennapod(currentPath + "/de.danoeh.antennapod_2050296.apk");
       antennapod.run();
+
+      // telegram = new Telegram(currentPath + "/org.telegram.messenger_26366.apk");
+      // telegram.run();
 
       // TIME PRINT
       endTime = System.nanoTime();

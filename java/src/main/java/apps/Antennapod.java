@@ -26,16 +26,14 @@ public class Antennapod {
   FunctionGraph graph;
   FunctionGraph curr;
 
-  public Antennapod() throws Exception {
+  public Antennapod(String apk) throws Exception {
     DesiredCapabilities cap = new DesiredCapabilities();
     cap.setCapability("platformName", "Android");
     cap.setCapability("platformVersion", "12");
     cap.setCapability("udid", "R5CR10N16WM");
     cap.setCapability("deviceName", "Galaxy S21 Ultra 5G");
-    cap.setCapability(
-      "app",
-      "/Users/hartonotjakrawinata/workCode/appium/apks/de.danoeh.antennapod_2050296.apk"
-    );
+    
+    cap.setCapability("app", apk);
     cap.setCapability("appWaitActivity", ".activity.MainActivity");
     cap.setCapability("automationName", "UiAutomator2");
     cap.setCapability("noReset", true);
