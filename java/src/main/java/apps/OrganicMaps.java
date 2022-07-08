@@ -3,6 +3,7 @@ package apps;
 import com.google.common.collect.ImmutableMap;
 
 import apps.Helpers.Direction;
+import apps.Helpers.Rand;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileCommand;
@@ -92,17 +93,34 @@ public class OrganicMaps {
   public Function<Void, Integer> pageMap() {
     Function<Void, Integer> func = Void -> {
       try {
-        while (Math.random() < 0.8) {
-          if (Math.random() < 0.5) {
+        WebElement position = this.driver.findElement(By.id("app.organicmaps:id/my_position"));
+        Helpers.safeClick(this.driver, position);
+        while (Helpers.rand(Rand.ALMOST_CONFIRMED)) {
+          // check if download is needed
+          List<WebElement> download = this.driver.findElements(By.id("app.organicmaps:id/onmap_downloader"));
+          if (download.size() != 0) {
+            WebElement downloadButton = this.driver.findElement(By.id("app.organicmaps:id/downloader_button"));
+            System.out.println("pageMap: Download Map");
+            Helpers.safeClick(this.driver, downloadButton);
+            boolean downloading = true;
+            while (downloading) {
+              System.out.println("pageMap: Downloading");
+              Thread.sleep(5000);
+              List<WebElement> downloadScreen = this.driver.findElements(By.id("app.organicmaps:id/onmap_downloader"));
+              downloading = downloadScreen.size() != 0;
+            }
+          }
+          if (Helpers.rand(Rand.NEUTRAL)) {
             // map swipe (optional while)
             RandomEnum<Direction> r = new RandomEnum<Direction>(Direction.class);
-            Helpers.swipe(this.driver, r.random());
-            System.out.println("pageMap: swipe");
+            Direction direction = r.random();
+            Helpers.swipe(this.driver, direction);
+            System.out.println("pageMap: swipe :: " + direction.name());
             continue;
           }
           // map manipulation (non swipe)
           List<WebElement> sop = new ArrayList<>();
-          WebElement position = this.driver.findElement(By.id("app.organicmaps:id/my_position"));
+          position = this.driver.findElement(By.id("app.organicmaps:id/my_position"));
           WebElement zoomin = this.driver.findElement(By.id("app.organicmaps:id/nav_zoom_in"));
           WebElement zoomout = this.driver.findElement(By.id("app.organicmaps:id/nav_zoom_out"));
           WebElement surfaceview = this.driver.findElement(By.id("app.organicmaps:id/layers_button"));
@@ -111,13 +129,12 @@ public class OrganicMaps {
           sop.add(zoomin);
           sop.add(zoomout);
           int id = Helpers.clickRandom(this.driver, sop, null);
-          System.out.println("pageMap: manipulate :: " + id);
+          String[] mapMinipulateType = { "surfaceview", "position", "position", "zoomout" };
+          System.out.println("pageMap: manipulate :: " + id + " :: " + mapMinipulateType[id]);
           if (id == 0) {
             // if surfaceview (complete selection)
             List<WebElement> views = this.driver.findElements(By.id("app.organicmaps:id/btn"));
-            if (views.size() >= 2) {
-              Helpers.safeClick(this.driver, views.get(1));
-            }
+            Helpers.clickRandom(this.driver, views, null);
           }
         }
       } catch (Exception err) {
@@ -136,7 +153,8 @@ public class OrganicMaps {
         menuList = Helpers.getClickables(menuList);
         WebElement button = menuList.get(idx);
         Helpers.safeClick(this.driver, button);
-        System.out.println("navigateMenu : clicked :: " + idx);
+        String[] menuType = { "question", "search", "star", "options" };
+        System.out.println("navigateMenu : clicked :: " + idx + " :: " + menuType[idx]);
         Thread.sleep(3000);
       } catch (Exception err) {
         err.printStackTrace();
@@ -150,37 +168,76 @@ public class OrganicMaps {
     Function<Void, Integer> func = Void -> {
       try {
         // Switch Tabs (optional if)
-        WebElement tabs = this.driver.findElement(By.id("app.organicmaps:id/tabs"));
-        List<WebElement> tabList = tabs.findElements(By.className("android.widget.LinearLayout"));
-        tabList = Helpers.getClickables(tabList);
-        Helpers.safeClick(this.driver, tabList.get(0));
-        System.out.println("pageSearch : switch Tabs :: " + 0);
+        if (Helpers.rand(Rand.NEUTRAL)) {
+          pageSearchSwitchTabs();
+          int count = 0;
+          while (pageSearchEmpytyPage()) {
+            System.out.println("pageSearch: Empty Page switching tab");
+            pageSearchSwitchTabs();
+            if (++count > 10) {
+              throw new Exception("pageSearch: Empty Page after 10 tab switch");
+            }
+          }
+        }
 
-        // Choose Catergories (Optional if)
+        // Choose Catergories (MUST PLAY)
         WebElement pages = this.driver.findElement(By.id("app.organicmaps:id/pages"));
         List<WebElement> pageList = pages.findElements(By.className("android.widget.TextView"));
+        Helpers.filterElements(pageList, new String[]{"Clear Search History"}, "content-desc", true);
         Helpers.safeClick(this.driver, pageList.get(0));
-        System.out.println("pageSearch : choose categories :: " + 0);
+        System.out.println("pageSearch : choose categories :: " + 0 + " :: " + pageList.get(0).getAttribute("text"));
 
         // Search bar (Optional if)
-        WebElement textArea = this.driver.findElement(By.id("app.organicmaps:id/query"));
-        textArea.sendKeys("xxxx");
-        System.out.println("pageSearch : search bar :: " + 0);
+        if (Helpers.rand(Rand.NEUTRAL)) {
+          WebElement textArea = this.driver.findElement(By.id("app.organicmaps:id/query"));
+          String keysToSend = "xxxx";
+          textArea.sendKeys(keysToSend);
+          System.out.println("pageSearch : search bar :: " + 0 + " :: " + keysToSend);
+        }
 
         // Results selection
         WebElement results = this.driver.findElement(By.id("app.organicmaps:id/results_frame"));
         List<WebElement> resultsList = results.findElements(By.className("android.widget.RelativeLayout"));
-        Helpers.safeClick(this.driver, resultsList.get(0));
-        System.out.println("pageSearch : results select :: " + 0);
+        if (resultsList.size() == 0) {
+          int selected = (int) Math.floor(Math.random() * resultsList.size());
+          String selectedText = resultsList
+            .get(selected)
+            .findElement(By.className("android.widget.TextView"))
+            .getAttribute("text");
+          Helpers.safeClick(this.driver, resultsList.get(selected));
+          System.out.println(
+            "pageSearch : results select :: "
+            + selected
+            + " :: "
+            + selectedText
+          );
+        }
 
-        // Cancel
-        Helpers.tap(this.driver, 0.5, 0.3);
-        System.out.println("pageSearch : cancel :: " + 0);
+        // // Cancel
+        // Helpers.tap(this.driver, 0.8, 0.2);
+        // System.out.println("pageSearch : cancel :: " + 0);
       } catch (Exception err) {
         err.printStackTrace();
       }
       return 5;
     };
     return func;
+  }
+
+  private void pageSearchSwitchTabs() throws Exception {
+    WebElement tabs = this.driver.findElement(By.id("app.organicmaps:id/tabs"));
+    List<WebElement> tabList = tabs.findElements(By.className("android.widget.LinearLayout"));
+    tabList = Helpers.getClickables(tabList);
+    int id = Helpers.clickRandom(this.driver, tabList, null);
+    System.out.println("pageSearch : switch Tabs :: " + 0 + " :: " + tabList.get(id).getAttribute("content-desc"));
+  }
+
+  private boolean pageSearchEmpytyPage() {
+    // If history is empty
+    WebElement pages = this.driver.findElement(By.id("app.organicmaps:id/pages"));
+    List<WebElement> pageList = pages.findElements(By.className("android.widget.TextView"));
+    pageList = Helpers.getClickables(pageList);
+    if (pageList.size() == 0) return true;
+    return false;
   }
 }

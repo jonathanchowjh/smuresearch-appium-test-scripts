@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
 import java.util.Random;
@@ -54,8 +55,9 @@ public class Helpers {
     throws Exception {
     if (isClickable(element)) {
       // driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-      Thread.sleep(2000); 
+      Thread.sleep(2000);
       element.click();
+      Thread.sleep(2000);
     } else {
       throw new Error("ERROR: Element Unclickable: " + element.getClass());
     }
@@ -109,6 +111,24 @@ public class Helpers {
     return ret;
   }
 
+  public static boolean filterElements(
+    List<WebElement> elements,
+    String[] attributeValue,
+    String attribute,
+    boolean remove
+  ) {
+    return elements.removeIf(ele -> {
+      if (remove) {
+        return Arrays
+          .asList(attributeValue)
+          .contains(ele.getAttribute(attribute));
+      }
+      return !Arrays
+        .asList(attributeValue)
+        .contains(ele.getAttribute(attribute));
+    });
+  }
+
   public static void timeout(long seconds) throws Exception {
     Console cnsl = System.console();
     Future<String> future = CompletableFuture.supplyAsync(() -> cnsl.readLine());
@@ -120,6 +140,34 @@ public class Helpers {
     }
   }
 
+  enum Rand {
+    CONFIRMED,
+    ALMOST_CONFIRMED,
+    HIGH,
+    NEUTRAL,
+    LOW,
+    ALMOST_NEVER,
+    NEVER
+  }
+
+   // CONFIRMED AND NEVER SHOULD NOT BE CHANGED FROM 0 / 1
+  public static double randProb(Rand r) {
+    if (r == Rand.CONFIRMED) return 1;
+    if (r == Rand.NEVER) return 0;
+    if (r == Rand.ALMOST_CONFIRMED) return 0.85;
+    if (r == Rand.HIGH) return 0.7;
+    if (r == Rand.NEUTRAL) return 0.5;
+    if (r == Rand.LOW) return 0.3;
+    if (r == Rand.ALMOST_NEVER) return 0.15;
+    return 0;
+  }
+
+  public static boolean rand(Rand r) {
+    if (Math.random() < randProb(r)) return true;
+    return false;
+  }
+
+  // MAP MANIPULATION
   enum Direction {
     UP,
     DOWN,
@@ -142,11 +190,12 @@ public class Helpers {
       touchPoints[0] = 0.3;
       touchPoints[2] = 0.7;
     }  
-    Thread.sleep(3000);
+    Thread.sleep(2000);
     Dimension dimension = driver.manage().window().getSize();
     Point start = new Point((int)(dimension.width*touchPoints[0]), (int)(dimension.height*touchPoints[1]));
     Point end = new Point((int)(dimension.width*touchPoints[2]), (int)(dimension.height*touchPoints[3]));
     W3cActions.doSwipe(driver, start, end, 1000);  //with duration 1s
+    Thread.sleep(2000);
   }
 
   public static void tap(AppiumDriver driver, double w, double h) throws Exception {
